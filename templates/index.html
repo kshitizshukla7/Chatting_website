@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Chat Room</h1>
+        <div id="chat-box" class="chat-box"></div>
+
+        <form id="message-form">
+            <input id="message-input" type="text" placeholder="Enter your message..." autocomplete="off">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        // Connect to the Flask-SocketIO server
+        const socket = io();
+
+        // Receive messages from the server
+        socket.on('message', function(msg) {
+            const chatBox = document.getElementById('chat-box');
+            const newMessage = document.createElement('div');
+            newMessage.textContent = msg;
+            chatBox.appendChild(newMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        // Send message to the server when the form is submitted
+        document.getElementById('message-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value;
+            socket.send(message);  // Send the message to the server
+            messageInput.value = '';  // Clear the input
+        });
+    </script>
+</body>
+</html>
